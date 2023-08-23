@@ -133,6 +133,14 @@ $(function () {
       socket.emit('user joined', userName);
     }
   });
+  
+  $('form').submit(function(event) {
+  event.preventDefault();
+  const messageText = $('#input').val().trim();
+  if (messageText !== '') {
+    // Code to send the message
+  }
+});
 
   $('form').submit(function() {
     if (userName.trim() !== '') {
