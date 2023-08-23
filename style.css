@@ -1,0 +1,29 @@
+/* ... (other styles) ... */
+
+#messages li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  
+  #messages li.sent {
+    background-color: #dcf8c6;
+    align-self: flex-end;
+  }
+  
+  #messages li.received {
+    background-color: #f3f3f3;
+    align-self: flex-start;
+  }
+  
+  /* Style the sender's name in chat messages */
+  #messages li::before {
+    content: attr(data-sender);
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #666;
+  }
+  
+  /* ... (other styles) ... */
+  

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat App</title>
+        <style>
+                    /* Reset default browser styles */
+            body, ul, li, p, h1, h2, h3, h4, h5, h6 {
+            margin: 0;
+            padding: 0;
+            }
+
+            /* Style the chat container */
+            body {
+            font-family: Arial, sans-serif;
+            background-color: #f1e8e8;
+            }
+
+            #chat-container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            /* Style the name input form */
+            #name-form {
+            text-align: center;
+            margin-bottom: 20px;
+            }
+
+            #name-input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            }
+
+            #name-submit {
+            padding: 10px 15px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            color: #060606;
+            cursor: pointer;
+            }
+
+            #name-submit:hover {
+            background-color: #0056b3;
+            }
+
+            /* Style the chat messages */
+            #messages {
+            width: auto;
+            list-style-type: none;
+            padding: 0;
+            }
+
+            #messages li {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            }
+
+            #messages li::before {
+            content: attr(data-sender);
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #666;
+            }
+
+            #messages li.sent {
+            background-color: #dcf8c6;
+            align-self: flex-end;
+            }
+
+            #messages li.received {
+            background-color: #f3f3f3;
+            align-self: flex-start;
+            }
+
+            /* Style the chat input form */
+            #form {
+            display: none;
+            margin-top: 20px;
+            }
+
+            #input {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px 0 0 5px;
+            }
+
+            button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            color: #fff;
+            cursor: pointer;
+            }
+
+            button:hover {
+            background-color: #0056b3;
+            }
+
+    </style>
+</head>
+<body>
+  <div id="chat-container">
+    <div id="name-form">
+      <input id="name-input" placeholder="Enter your name" />
+      <button id="name-submit">Join Chat</button>
+    </div>
+    <ul id="messages"></ul>
+    <form id="form" action="">
+      <input id="input" autocomplete="None" placeholder="enter your message" /><button>Send</button>
+    </form>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery here -->
+  <script>
+$(function () {
+  const socket = io();
+  let userName = '';
+
+  $('#name-submit').click(function() {
+    userName = $('#name-input').val();
+    if (userName.trim() !== '') {
+      $('#name-form').hide();
+      $('#form').show();
+      socket.emit('user joined', userName);
+    }
+  });
+
+  $('form').submit(function() {
+    if (userName.trim() !== '') {
+      const message = {
+        name: userName,
+        text: $('#input').val() // Send the message as is
+      };
+      socket.emit('chat message', message);
+      $('#input').val('');
+    }
+    return false;
+  });
+
+  socket.on('chat message', function(msg) {
+    const formattedText = replaceEmojis(msg.text); // Replace emojis in received messages
+    $('#messages').append($('<li>').attr('data-sender', msg.name).html(msg.name + ': ' + formattedText));
+  });
+
+  // Function to replace keywords with emojis
+  function replaceEmojis(text) {
+    const emojis = {
+      react: '⚛️',
+      like: '❤️',
+      congratulations: '🥳',
+      woah: '😮',
+      lol: '😂'
+    };
+
+    // Replace keywords with emojis
+    return text.replace(/\b(\w+)\b/g, (match, keyword) => emojis[keyword.toLowerCase()] || match);
+  }
+});
+
+  </script>
+</body>
+</html>
